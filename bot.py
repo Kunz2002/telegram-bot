@@ -11,7 +11,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # /nhap
 async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 3:
-        await update.message.reply_text("Sai cú pháp! Ví dụ: /nhap TÊN NGƯỜI NGƯỜI NHẬP TÊN TK MỆNH GIÁ TIỀN")
+        await update.message.reply_text("Sai cú pháp! /nhap <TÊN NGƯỜI NGƯỜI NHẬP> <TÊN TK> <MỆNH GIÁ TIỀN>")
         return
     
     ten_nguoi_dung = context.args[0]
