@@ -22,7 +22,7 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Giá trị phải là số nguyên!")
         return
 
-    ket_qua = f"/W {tai_khoan} - OWS {ten_nguoi_dung} - {gia_tri} - 5d"
+    ket_qua = f"/W {tai_khoan} - OWS {ten_nguoi_dung} - {gia_tri} - 5D"
     await update.message.reply_text(ket_qua)
 
 def main():
