@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 import os
 
-TOKEN = "8470587261:AAFSLT4uWXd9iuC-r5wv1XwEHvv8L4qI-AQ" # lấy token từ biến môi trường
+TOKEN = "8470587261:AAFSLT4uWXd9iuC-r5wv1XwEHvv8L4qI-AQ"  # lấy token từ biến môi trường
 
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -11,10 +11,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # /nhap
 async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 3:
-        await update.message.reply_text("Sai cú pháp! /nhap <TÊN NGƯỜI NGƯỜI NHẬP> <TÊN TK> <MỆNH GIÁ TIỀN>")
+        await update.message.reply_text("Sai cú pháp! /nhap <TÊN NGƯỜI DÙNG> <TÊN TK> <MỆNH GIÁ TIỀN>")
         return
     
-    ten_nguoi_dung = context.args[0]
+    # luôn in hoa tên người dùng
+    ten_nguoi_dung = context.args[0].upper()
     tai_khoan = context.args[1]
     try:
         gia_tri = int(context.args[2])
