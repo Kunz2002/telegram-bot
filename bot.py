@@ -34,7 +34,7 @@
 # # if __name__ == "__main__":
 # #     main()
 
-
+import pandas as pd
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 import pandas as pd
