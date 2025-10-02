@@ -48,7 +48,7 @@ FILE_NAME = "ketqua.xlsx"
 def save_to_excel(nguoi_dung, tai_khoan, gia_tri, ket_qua):
     thoi_gian = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Nếu file chưa tồn tại -> tạo mới với header
+    # Nếu file chưa tồn tại -> tạo mới
     if not os.path.exists(FILE_NAME):
         wb = Workbook()
         ws = wb.active
@@ -65,7 +65,10 @@ def save_to_excel(nguoi_dung, tai_khoan, gia_tri, ket_qua):
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Chào bạn! Nhập theo cú pháp:\n/nhap <TênNgườiDùng> <TàiKhoản> <SốNguyên>"
+        "Chào bạn! Nhập theo cú pháp:\n"
+        "/nhap <TênNgườiDùng> <TàiKhoản> <SốNguyên>\n"
+        "Hoặc xem kết quả theo tên:\n"
+        "/xem <TênNgườiDùng>"
     )
 
 # /nhap
@@ -85,19 +88,45 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     ket_qua = f"/W {tai_khoan} - OWS {ten_nguoi_dung} - {gia_tri} - 5D"
 
-    # Lưu vào Excel trước
+    # Lưu vào Excel
     save_to_excel(ten_nguoi_dung, tai_khoan, gia_tri, ket_qua)
 
-    # Gửi 1 tin nhắn duy nhất với kết quả vừa nhập
-    await update.message.reply_text(
-        f"\n{ket_qua}"
-    )
+    # Gửi 1 tin nhắn duy nhất
+    await update.message.reply_text(f"✅ Nhập thành công!\n\nKết quả vừa nhập:\n{ket_qua}")
+
+# /xem <TênNgườiDùng>
+async def xem(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) < 1:
+        await update.message.reply_text("❌ Vui lòng nhập tên người dùng để tìm kiếm.\nVí dụ: /xem Kunz")
+        return
+    
+    ten_tim = context.args[0].upper()
+
+    if not os.path.exists(FILE_NAME):
+        await update.message.reply_text("❌ Chưa có dữ liệu nào trong ketqua.xlsx.")
+        return
+
+    wb = load_workbook(FILE_NAME)
+    ws = wb.active
+
+    ket_qua_tim = []
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        thoi_gian, nguoi_dung, tai_khoan, gia_tri, ket_qua = row
+        if nguoi_dung.upper() == ten_tim:
+            ket_qua_tim.append(f"[{thoi_gian}] {ket_qua}")
+
+    if ket_qua_tim:
+        # Gửi tất cả kết quả trong 1 tin nhắn, mỗi kết quả 1 dòng
+        await update.message.reply_text("\n".join(ket_qua_tim))
+    else:
+        await update.message.reply_text(f"❌ Không tìm thấy kết quả cho '{ten_tim}'.")
 
 # Main
 def main():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("nhap", nhap))
+    app.add_handler(CommandHandler("xem", xem))
     app.run_polling()
 
 if __name__ == "__main__":
