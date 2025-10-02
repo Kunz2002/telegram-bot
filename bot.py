@@ -90,7 +90,7 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Gửi 1 tin nhắn duy nhất với kết quả vừa nhập
     await update.message.reply_text(
-        f"✅ Nhập thành công!\n\nKết quả vừa nhập:\n{ket_qua}"
+        f"\n{ket_qua}"
     )
 
 # Main
