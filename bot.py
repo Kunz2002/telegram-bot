@@ -33,6 +33,8 @@
 
 # # if __name__ == "__main__":
 # #     main()import sqlite3
+
+
 import os
 from datetime import datetime
 from telegram import Update
@@ -69,12 +71,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # /nhap
 async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 3:
-        await update.message.reply_text(
-            "❌ Sai cú pháp!\nVí dụ: /nhap Kunz hiha123 123"
-        )
+        await update.message.reply_text("❌ Sai cú pháp!\nVí dụ: /nhap Kunz hiha123 123")
         return
     
-    ten_nguoi_dung = context.args[0].upper()  # In hoa
+    ten_nguoi_dung = context.args[0].upper()
     tai_khoan = context.args[1]
 
     try:
@@ -85,21 +85,13 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     ket_qua = f"/W {tai_khoan} - OWS {ten_nguoi_dung} - {gia_tri} - 5D"
 
-    # Trả lại tin nhắn vừa nhập
-    tin_nhan_nhap = (
-        f"Bạn vừa nhập:\n"
-        f"👤 Tên: {ten_nguoi_dung}\n"
-        f"💳 Tài khoản: {tai_khoan}\n"
-        f"💰 Giá trị: {gia_tri}\n"
-        f"📄 Kết quả: {ket_qua}"
-    )
-    await update.message.reply_text(tin_nhan_nhap)
-
-    # Lưu vào Excel
+    # Lưu vào Excel trước
     save_to_excel(ten_nguoi_dung, tai_khoan, gia_tri, ket_qua)
 
-    # Thông báo lưu thành công
-    await update.message.reply_text("✅ Đã lưu thành công vào ketqua.xlsx!")
+    # Gửi 1 tin nhắn duy nhất với kết quả vừa nhập
+    await update.message.reply_text(
+        f"✅ Nhập thành công!\n\nKết quả vừa nhập:\n{ket_qua}"
+    )
 
 # Main
 def main():
