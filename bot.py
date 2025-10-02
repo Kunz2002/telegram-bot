@@ -92,8 +92,7 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_to_excel(ten_nguoi_dung, tai_khoan, gia_tri, ket_qua)
 
     # Gửi 1 tin nhắn duy nhất
-    await update.message.reply_text(f"✅ Nhập thành công!\n\nKết quả vừa nhập:\n{ket_qua}")
-
+    await update.message.reply_text(f"\n{ket_qua}")
 # /xem <TênNgườiDùng>
 async def xem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 1:
@@ -111,15 +110,17 @@ async def xem(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     ket_qua_tim = []
     for row in ws.iter_rows(min_row=2, values_only=True):
-        thoi_gian, nguoi_dung, tai_khoan, gia_tri, ket_qua = row
+        _, nguoi_dung, _, _, ket_qua = row
         if nguoi_dung.upper() == ten_tim:
-            ket_qua_tim.append(f"[{thoi_gian}] {ket_qua}")
+            ket_qua_tim.append(ket_qua)
 
     if ket_qua_tim:
-        # Gửi tất cả kết quả trong 1 tin nhắn, mỗi kết quả 1 dòng
-        await update.message.reply_text("\n".join(ket_qua_tim))
+        # Gửi từng ket_qua 1 tin nhắn riêng
+        for kq in ket_qua_tim:
+            await update.message.reply_text(kq)
     else:
         await update.message.reply_text(f"❌ Không tìm thấy kết quả cho '{ten_tim}'.")
+
 
 # Main
 def main():
