@@ -35,11 +35,29 @@
 #     main()
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
-from openpyxl import Workbook, load_workbook
+import pandas as pd
 import os
+from datetime import datetime
 
-TOKEN = "8470587261:AAFSLT4uWXd9iuC-r5wv1XwEHvv8L4qI-AQ"  # token bot của bạn
-EXCEL_FILE = "data.xlsx"  # file Excel lưu dữ liệu
+TOKEN = "8470587261:AAFSLT4uWXd9iuC-r5wv1XwEHvv8L4qI-AQ"  # token bot
+
+FILE_NAME = "ketqua.xlsx"
+
+# Hàm lưu vào Excel
+def save_to_excel(nguoi_dung, tai_khoan, gia_tri, ket_qua):
+    if os.path.exists(FILE_NAME):
+        df = pd.read_excel(FILE_NAME)
+    else:
+        df = pd.DataFrame(columns=["Thời gian", "Người dùng", "Tài khoản", "Giá trị", "Kết quả"])
+
+    thoi_gian = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    new_row = {"Thời gian": thoi_gian,
+               "Người dùng": nguoi_dung,
+               "Tài khoản": tai_khoan,
+               "Giá trị": gia_tri,
+               "Kết quả": ket_qua}
+    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+    df.to_excel(FILE_NAME, index=False)
 
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -51,7 +69,6 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Sai cú pháp! /nhap <TÊN NGƯỜI DÙNG> <TÊN TK> <MỆNH GIÁ TIỀN>")
         return
     
-    # tên người dùng luôn in hoa
     ten_nguoi_dung = context.args[0].upper()
     tai_khoan = context.args[1]
     try:
@@ -61,24 +78,10 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     ket_qua = f"/W {tai_khoan} - OWS {ten_nguoi_dung} - {gia_tri} - 5D"
-
-    # Trả lời cho user
     await update.message.reply_text(ket_qua)
 
-    # Lưu vào file Excel
-    if not os.path.exists(EXCEL_FILE):
-        # Nếu file chưa tồn tại thì tạo mới
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "LichSu"
-        ws.append(["TaiKhoan", "NguoiDung", "GiaTri", "CauLenh"])  # header
-        wb.save(EXCEL_FILE)
-
-    # Mở file để ghi thêm
-    wb = load_workbook(EXCEL_FILE)
-    ws = wb.active
-    ws.append([tai_khoan, ten_nguoi_dung, gia_tri, ket_qua])
-    wb.save(EXCEL_FILE)
+    # Lưu vào Excel
+    save_to_excel(ten_nguoi_dung, tai_khoan, gia_tri, ket_qua)
 
 def main():
     app = Application.builder().token(TOKEN).build()
