@@ -45,15 +45,16 @@ FILE_NAME = "ketqua.xlsx"
 # Hàm lưu vào Excel
 def save_to_excel(nguoi_dung, tai_khoan, gia_tri, ket_qua):
     thoi_gian = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # Nếu file chưa tồn tại -> tạo mới
+
+    # Nếu file chưa tồn tại -> tạo mới với header
     if not os.path.exists(FILE_NAME):
         wb = Workbook()
         ws = wb.active
+        ws.title = "Nhập dữ liệu"
         ws.append(["Thời gian", "Người dùng", "Tài khoản", "Giá trị", "Kết quả"])
         wb.save(FILE_NAME)
 
-    # Ghi thêm dữ liệu
+    # Ghi thêm dữ liệu mới
     wb = load_workbook(FILE_NAME)
     ws = wb.active
     ws.append([thoi_gian, nguoi_dung, tai_khoan, gia_tri, ket_qua])
@@ -62,7 +63,7 @@ def save_to_excel(nguoi_dung, tai_khoan, gia_tri, ket_qua):
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Nhập theo cú pháp:\n/nhap <TênNgườiDùng> <TàiKhoản> <SốNguyên>"
+        "Chào bạn! Nhập theo cú pháp:\n/nhap <TênNgườiDùng> <TàiKhoản> <SốNguyên>"
     )
 
 # /nhap
@@ -73,9 +74,9 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
     
-    ten_nguoi_dung = context.args[0].upper()  # in hoa
+    ten_nguoi_dung = context.args[0].upper()  # In hoa
     tai_khoan = context.args[1]
-    
+
     try:
         gia_tri = int(context.args[2])
     except ValueError:
@@ -83,12 +84,18 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     ket_qua = f"/W {tai_khoan} - OWS {ten_nguoi_dung} - {gia_tri} - 5D"
-    
+
     # Trả lại tin nhắn vừa nhập
-    tin_nhan_nhap = f"Bạn vừa nhập:\nTên: {ten_nguoi_dung}\nTài khoản: {tai_khoan}\nGiá trị: {gia_tri}\nKết quả: {ket_qua}"
+    tin_nhan_nhap = (
+        f"Bạn vừa nhập:\n"
+        f"👤 Tên: {ten_nguoi_dung}\n"
+        f"💳 Tài khoản: {tai_khoan}\n"
+        f"💰 Giá trị: {gia_tri}\n"
+        f"📄 Kết quả: {ket_qua}"
+    )
     await update.message.reply_text(tin_nhan_nhap)
-    
-    # Lưu dữ liệu vào Excel
+
+    # Lưu vào Excel
     save_to_excel(ten_nguoi_dung, tai_khoan, gia_tri, ket_qua)
 
     # Thông báo lưu thành công
