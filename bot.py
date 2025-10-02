@@ -103,6 +103,7 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Gửi 1 tin nhắn duy nhất chứa kết quả
     await update.message.reply_text(ket_qua)
 
+
 # /xem <TênNgườiDùng>
 async def xem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 1:
