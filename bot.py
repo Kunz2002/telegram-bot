@@ -36,28 +36,29 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 import pandas as pd
+from openpyxl import Workbook, load_workbook
 import os
 from datetime import datetime
 
-TOKEN = "8470587261:AAFSLT4uWXd9iuC-r5wv1XwEHvv8L4qI-AQ"  # token bot
-
+TOKEN = "8470587261:AAFSLT4uWXd9iuC-r5wv1XwEHvv8L4qI-AQ"
 FILE_NAME = "ketqua.xlsx"
 
 # Hàm lưu vào Excel
 def save_to_excel(nguoi_dung, tai_khoan, gia_tri, ket_qua):
-    if os.path.exists(FILE_NAME):
-        df = pd.read_excel(FILE_NAME)
-    else:
-        df = pd.DataFrame(columns=["Thời gian", "Người dùng", "Tài khoản", "Giá trị", "Kết quả"])
-
     thoi_gian = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    new_row = {"Thời gian": thoi_gian,
-               "Người dùng": nguoi_dung,
-               "Tài khoản": tai_khoan,
-               "Giá trị": gia_tri,
-               "Kết quả": ket_qua}
-    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-    df.to_excel(FILE_NAME, index=False)
+
+    if not os.path.exists(FILE_NAME):
+        # Tạo file mới nếu chưa có
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["Thời gian", "Người dùng", "Tài khoản", "Giá trị", "Kết quả"])
+        wb.save(FILE_NAME)
+
+    # Ghi thêm dữ liệu
+    wb = load_workbook(FILE_NAME)
+    ws = wb.active
+    ws.append([thoi_gian, nguoi_dung, tai_khoan, gia_tri, ket_qua])
+    wb.save(FILE_NAME)
 
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
