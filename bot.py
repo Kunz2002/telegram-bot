@@ -126,7 +126,7 @@ async def xem(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("nhap", nhap))
+    app.add_handler(CommandHandler("n", nhap))
     app.add_handler(CommandHandler("xem", xem))
     app.run_polling()
 
