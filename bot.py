@@ -120,6 +120,40 @@ async def xem(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(kq)
     else:
         await update.message.reply_text(f"❌ Không tìm thấy kết quả cho '{ten_tim}'.")
+# /xoa <TênNgườiDùng>
+async def xoa(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) < 1:
+        await update.message.reply_text("❌ Vui lòng nhập tên người dùng để xóa.\nVí dụ: /xoa Kunz")
+        return
+    
+    ten_xoa = context.args[0].upper()
+
+    if not os.path.exists(FILE_NAME):
+        await update.message.reply_text("❌ Chưa có dữ liệu nào trong ketqua.xlsx.")
+        return
+
+    wb = load_workbook(FILE_NAME)
+    ws = wb.active
+
+    # Lọc lại các dòng không bị xóa
+    rows = list(ws.iter_rows(min_row=2, values_only=True))
+    rows_giu_lai = [row for row in rows if row[1].upper() != ten_xoa]  # cột 1 là "Người dùng"
+
+    so_dong_xoa = len(rows) - len(rows_giu_lai)
+
+    if so_dong_xoa == 0:
+        await update.message.reply_text(f"❌ Không tìm thấy dữ liệu của '{ten_xoa}' để xóa.")
+        return
+
+    # Xóa tất cả dòng cũ
+    ws.delete_rows(2, ws.max_row - 1)
+
+    # Ghi lại các dòng còn giữ lại
+    for row in rows_giu_lai:
+        ws.append(row)
+    wb.save(FILE_NAME)
+
+    await update.message.reply_text(f"✅ Đã xóa {so_dong_xoa} kết quả của '{ten_xoa}' thành công!")
 
 
 # Main
