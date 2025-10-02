@@ -162,6 +162,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("nhap", nhap))
     app.add_handler(CommandHandler("xem", xem))
+    app.add_handler(CommandHandler("xoa", xoa))
     app.run_polling()
 
 if __name__ == "__main__":
