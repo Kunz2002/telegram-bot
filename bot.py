@@ -70,7 +70,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Hoặc xem kết quả theo tên:\n"
         "/xem <TênNgườiDùng>"
     )
-
 # /nhap
 async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 3:
@@ -86,13 +85,24 @@ async def nhap(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ Giá trị phải là số nguyên!")
         return
 
+    # Kiểm tra trùng Tài khoản
+    if os.path.exists(FILE_NAME):
+        wb = load_workbook(FILE_NAME)
+        ws = wb.active
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            _, _, tk, _, _ = row
+            if tk == tai_khoan:
+                await update.message.reply_text(f"❌ Tài khoản '{tai_khoan}' đã tồn tại!")
+                return
+
     ket_qua = f"/W {tai_khoan} - OWS {ten_nguoi_dung} - {gia_tri} - 5D"
 
     # Lưu vào Excel
     save_to_excel(ten_nguoi_dung, tai_khoan, gia_tri, ket_qua)
 
-    # Gửi 1 tin nhắn duy nhất
-    await update.message.reply_text(f"\n{ket_qua}")
+    # Gửi 1 tin nhắn duy nhất chứa kết quả
+    await update.message.reply_text(ket_qua)
+
 # /xem <TênNgườiDùng>
 async def xem(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(context.args) < 1:
